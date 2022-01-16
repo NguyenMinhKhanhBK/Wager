@@ -1,7 +1,6 @@
 package service
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -41,7 +40,7 @@ func (ws *wagerService) CreateWager(request model.CreateWagerRequest) (*model.Wa
 		PlaceAt:             time.Now().UTC().Unix(),
 	}
 
-	err := ws.insertWager(&wager)
+	err := ws.createWager(&wager)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create wager: %v", err)
 	}
@@ -49,7 +48,7 @@ func (ws *wagerService) CreateWager(request model.CreateWagerRequest) (*model.Wa
 	return &wager, nil
 }
 
-func (ws *wagerService) insertWager(wager *model.Wager) error {
+func (ws *wagerService) createWager(wager *model.Wager) error {
 	insertQuery := fmt.Sprintf("INSERT INTO %v (total_wager_value, odds, selling_percentage, selling_price, current_selling_price, place_at) VALUES (?, ?, ?, ?, ?, ?)", ws.config.SQL.WagerTable)
 	res, err := ws.db.Exec(insertQuery, wager.TotalWagerValue, wager.Odds, wager.SellingPercentage, wager.SellingPrice, wager.CurrentSellingPrice, wager.PlaceAt)
 	if err != nil {
@@ -94,7 +93,7 @@ func (ws *wagerService) getWagerList(offset int, limit int) (*model.GetWagerList
 	return result, nil
 }
 
-func (ws *wagerService) scanSingleWager(rows *sql.Rows) (*model.Wager, error) {
+func (ws *wagerService) scanSingleWager(rows database.DBRows) (*model.Wager, error) {
 	if rows == nil {
 		return nil, errors.New("invalid rows object")
 	}

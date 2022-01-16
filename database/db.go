@@ -6,14 +6,20 @@ import (
 	"errors"
 )
 
+type DBRows interface {
+	Close() error
+	Next() bool
+	Scan(...interface{}) error
+}
+
 type DBManager interface {
 	BeginTx() (*sql.Tx, error)
 	CommitTx(tx *sql.Tx) error
 	RollbackTx(tx *sql.Tx) error
 	Exec(query string, args ...interface{}) (sql.Result, error)
 	ExecWithContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
-	Query(query string, args ...interface{}) (*sql.Rows, error)
-	QueryWithContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
+	Query(query string, args ...interface{}) (DBRows, error)
+	QueryWithContext(ctx context.Context, query string, args ...interface{}) (DBRows, error)
 }
 
 type database struct {
@@ -50,10 +56,10 @@ func (d *database) Exec(query string, args ...interface{}) (sql.Result, error) {
 	return d.db.Exec(query, args...)
 }
 
-func (d *database) Query(query string, args ...interface{}) (*sql.Rows, error) {
+func (d *database) Query(query string, args ...interface{}) (DBRows, error) {
 	return d.db.Query(query, args...)
 }
 
-func (d *database) QueryWithContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+func (d *database) QueryWithContext(ctx context.Context, query string, args ...interface{}) (DBRows, error) {
 	return d.db.QueryContext(ctx, query, args...)
 }

@@ -33,6 +33,6 @@ type GetWagerListResponse struct {
 }
 
 type BuyWagerRequest struct {
-	WagerID     uint    `json:"id"`
-	BuyingPrice float64 `json:"buying_price"`
+	WagerID     uint    `json:"id" validate:"gt=0"`
+	BuyingPrice float64 `json:"buying_price" validate:"gt=0"`
 }
