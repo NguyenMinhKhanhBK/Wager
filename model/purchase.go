@@ -1,11 +1,8 @@
 package model
 
-import "time"
-
 type Purchase struct {
-	ID          uint
-	WagerID     uint
-	Wager       Wager
-	BuyingPrice float64
-	BoughtAt    time.Time
+	PurchaseID  uint    `json:"id"`
+	WagerID     uint    `json:"wager_id"`
+	BuyingPrice float64 `json:"buying_price"`
+	BoughtAt    int64   `json:"bought_at"`
 }

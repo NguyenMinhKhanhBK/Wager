@@ -1,4 +1,4 @@
-create table if not exists wagers (
+CREATE TABLE if NOT EXISTS wagers (
     id bigint unsigned not null auto_increment primary key,
     total_wager_value int unsigned not null,
     odds int unsigned not null,
@@ -7,5 +7,5 @@ create table if not exists wagers (
     current_selling_price decimal not null,
     percentage_sold int unsigned,
     amount_sold decimal,
-    place_at datetime not null
+    place_at bigint not null
 )
