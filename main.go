@@ -12,13 +12,13 @@ import (
 	"wager/service"
 
 	_ "github.com/go-sql-driver/mysql"
+	//_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
 const (
-	SERVER_ADDRESS = "127.0.0.1"
-	MYSQL_DRIVER   = "mysql"
+	MYSQL_DRIVER = "mysql"
 )
 
 func main() {
@@ -30,6 +30,13 @@ func main() {
 	}
 
 	dsn := fmt.Sprintf("%v:%v@%v", config.SQL.Username, config.SQL.Password, config.SQL.DatabaseAddress)
+
+	/*
+		if err := migrateDatabase(dsn); err != nil {
+			logrus.WithError(err).Fatal("cannot migrate database")
+		}
+	*/
+
 	db, err := initDatabase(dsn)
 	if err != nil {
 		logrus.Fatalf("Failed to init database: %v", err)
@@ -45,8 +52,23 @@ func initDatabase(dataSourceName string) (database.DBManager, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return database.NewDB(db), nil
 }
+
+/*
+func migrateDatabase(dsn string) error {
+	db, _ := sql.Open("mysql", dsn)
+	driver, _ := mysql.WithInstance(db, &mysql.Config{})
+	m, _ := migrate.NewWithDatabaseInstance(
+		"file:///migrations",
+		"mysql",
+		driver,
+	)
+
+	m.Steps(2)
+}
+*/
 
 func startHTTPServer(config *conf.Config, db database.DBManager) {
 	if config == nil || db == nil {
@@ -63,7 +85,7 @@ func startHTTPServer(config *conf.Config, db database.DBManager) {
 
 	router.Use(middleware.LoggingMiddleware)
 
-	logrus.Infof("Running HTTP server at %v:%v", SERVER_ADDRESS, config.ServerPort)
-	serverAddr := fmt.Sprintf("%v:%v", SERVER_ADDRESS, config.ServerPort)
+	logrus.Infof("Running HTTP server at :%v", config.ServerPort)
+	serverAddr := fmt.Sprintf(":%v", config.ServerPort)
 	log.Fatal(http.ListenAndServe(serverAddr, router))
 }

@@ -31,9 +31,9 @@ func GetDefaultConfig() *Config {
 			BuyWager:     "/buy/{wager_id}",
 		},
 		SQL: SQLConfig{
-			DatabaseAddress: "tcp(127.0.0.1:3306)/demo",
-			Username:        "root",
-			Password:        os.Getenv("MYSQL_ROOT_PASSWORD"),
+			DatabaseAddress: "tcp(db:3306)/demo",
+			Username:        os.Getenv("MYSQL_USER"),
+			Password:        os.Getenv("MYSQL_PASSWORD"),
 			WagerTable:      "wagers",
 			PurchaseTable:   "purchase",
 		},

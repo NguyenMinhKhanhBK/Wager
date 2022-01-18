@@ -1,0 +1,33 @@
+version: '3'
+x-wager-common:
+  &common
+    environment:
+      MYSQL_USER: gotest
+      MYSQL_PASSWORD: gotest
+      MYSQL_ROOT_PASSWORD: gotest
+      MYSQL_DATABASE: demo
+
+services:
+  app:
+    <<: *common
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+    ports:
+      - "8080:8080" 
+    depends_on:
+      - db
+
+  db:
+    <<: *common
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    ports:
+      - "3306:3306"
+    # sync folders. MySQL data is stored outside container so that rebuilding doesn't clear db.
+    volumes:
+     - dbstorage:/var/lib/mysql
+
+volumes:
+  dbstorage:

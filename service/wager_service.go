@@ -178,7 +178,7 @@ func (ws *wagerService) buyWager(request *model.BuyWagerRequest, wager *model.Wa
 	updateQuery := fmt.Sprintf("UPDATE %v SET current_selling_price=?, percentage_sold=?, amount_sold=? WHERE id=?", ws.config.SQL.WagerTable)
 	_, err = ws.db.Exec(updateQuery, wager.CurrentSellingPrice, wager.PercentageSold.Uint, wager.AmountSold.Float64, wager.ID)
 	if err != nil {
-		tx.Rollback()
+		ws.db.RollbackTx(tx)
 		return nil, err
 	}
 
@@ -188,12 +188,12 @@ func (ws *wagerService) buyWager(request *model.BuyWagerRequest, wager *model.Wa
 		BoughtAt:    time.Now().UTC().Unix(),
 	}
 	if err := ws.createPurchase(purchase); err != nil {
-		tx.Rollback()
+		ws.db.RollbackTx(tx)
 		return nil, err
 	}
 
-	if err := tx.Commit(); err != nil {
-		tx.Rollback()
+	if err := ws.db.CommitTx(tx); err != nil {
+		ws.db.RollbackTx(tx)
 		return nil, err
 	}
 
