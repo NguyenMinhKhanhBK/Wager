@@ -12,7 +12,7 @@ docker-compose up
 ```
 - To run unit tests:
 ```
-docker-compose ...
+docker-compose run app /app/start.sh --test
 ```
 
 ## How to test
